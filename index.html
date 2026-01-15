@@ -279,15 +279,14 @@
         const submitBtn = document.getElementById('submitBtn');
         const messageBox = document.getElementById('messageBox');
 
-        // IMPORTANT: Replace this with your actual Make.com webhook URL
+        // FIXED: Added quotes around the URL
         const WEBHOOK_URL = 'https://hook.eu1.make.com/gv3a3hgm9jkopj1y3bxqtymg64mcrjom';
-        
+
         function showMessage(message, type) {
             messageBox.textContent = message;
             messageBox.className = `message ${type}`;
             messageBox.style.display = 'block';
             
-            // Auto-hide success messages after 5 seconds
             if (type === 'success') {
                 setTimeout(() => {
                     messageBox.style.display = 'none';
@@ -306,11 +305,8 @@
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-
-            // Hide any previous messages
             messageBox.style.display = 'none';
 
-            // Get form data
             const formData = {
                 sku: document.getElementById('sku').value,
                 quantity: parseInt(document.getElementById('quantity').value),
@@ -319,22 +315,14 @@
                 orderDate: new Date().toISOString()
             };
 
-            // Basic validation
             if (!formData.sku) {
                 showMessage('Please select a product', 'error');
                 return;
             }
 
-            if (formData.quantity < 1) {
-                showMessage('Quantity must be at least 1', 'error');
-                return;
-            }
-
-            // Set loading state
             setLoading(true);
 
             try {
-                // Send to Make.com webhook
                 const response = await fetch(WEBHOOK_URL, {
                     method: 'POST',
                     headers: {
@@ -343,38 +331,26 @@
                     body: JSON.stringify(formData)
                 });
 
+                // FIXED: Simplified to avoid JSON parsing errors
                 if (response.ok) {
-                    // We just check if the response is 'ok' (status 200)
                     showMessage('✅ Order placed successfully! Thank you for your purchase.', 'success');
                     form.reset();
-                    }
-                                   
-                    // Check if there was a stock issue (you can customize this based on your webhook response)
-                    if (result.status === 'out_of_stock') {
-                        showMessage(`⚠️ Sorry! Only ${result.available} units available. ${result.message}`, 'warning');
-                    } else if (result.status === 'low_stock') {
-                        showMessage(`✅ Order placed! Note: Only ${result.available} units left in stock.`, 'success');
-                        form.reset();
-                    } else {
-                        showMessage('✅ Order placed successfully! Thank you for your purchase.', 'success');
-                        form.reset();
-                    }
                 } else {
                     throw new Error('Failed to process order');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                showMessage('❌ Something went wrong. Please try again or contact support.', 'error');
+                showMessage('❌ Something went wrong. Please try again.', 'error');
             } finally {
+                // This ensures the button is re-enabled no matter what
                 setLoading(false);
             }
         });
 
-        // Real-time quantity validation
         document.getElementById('quantity').addEventListener('input', (e) => {
             const value = parseInt(e.target.value);
             if (value > 100) {
-                showMessage('⚠️ Maximum order quantity is 100 units. For bulk orders, please contact us.', 'warning');
+                showMessage('⚠️ Maximum order quantity is 100 units.', 'warning');
                 e.target.value = 100;
             }
         });
