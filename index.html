@@ -322,15 +322,19 @@
 
             setLoading(true);
 
-            try {
-                const response = await fetch(WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formData)
-                });
-
+         try {
+    // Build URL with parameters (same method that worked in browser!)
+    const params = new URLSearchParams({
+        sku: formData.sku,
+        quantity: formData.quantity,
+        customerName: formData.customerName,
+        customerEmail: formData.customerEmail || 'not-provided'
+    });
+    
+    const response = await fetch(`${WEBHOOK_URL}?${params.toString()}`, {
+        method: 'GET'
+    }); 
+         
                 // FIXED: Simplified to avoid JSON parsing errors
                 if (response.ok) {
                     showMessage('✅ Order placed successfully! Thank you for your purchase.', 'success');
