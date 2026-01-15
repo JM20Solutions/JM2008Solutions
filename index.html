@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -344,8 +344,11 @@
                 });
 
                 if (response.ok) {
-                    const result = await response.json();
-                    
+                    // We just check if the response is 'ok' (status 200)
+                    showMessage('✅ Order placed successfully! Thank you for your purchase.', 'success');
+                    form.reset();
+                    }
+                                   
                     // Check if there was a stock issue (you can customize this based on your webhook response)
                     if (result.status === 'out_of_stock') {
                         showMessage(`⚠️ Sorry! Only ${result.available} units available. ${result.message}`, 'warning');
