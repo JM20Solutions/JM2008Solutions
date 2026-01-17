@@ -334,7 +334,7 @@
     });
     
     const response = await fetch(`${WEBHOOK_URL}?${params.toString()}`, {
-        method: 'GET'
+        method: 'POST'
     }); 
          
                 // FIXED: Simplified to avoid JSON parsing errors
